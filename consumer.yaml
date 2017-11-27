@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: consumer
+objects:
+  - apiVersion: v1
+    kind: Pod
+    metadata:
+      name: consumer-${NAME}
+    spec:
+      containers:
+        - name: receiver
+          image: lulf/enmasse-demo:latest
+          imagePullPolicy: Never
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - /forever_recv.py -a ${MESSAGING_URL}
+parameters:
+  - name: MESSAGING_URL
+    value: amqps://test:test@messaging.enmasse-space1.svc:5671/myaddress
+    required: true
+  - name: NAME
+    required: true

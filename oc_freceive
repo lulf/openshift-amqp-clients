@@ -1,0 +1,11 @@
+#!/bin/bash
+
+ADDRESS="$1"
+if [ -z "$1" ]
+  then
+    echo "setting ADDRESS to anycast"
+    ADDRESS="anycast"
+fi
+
+./forever_recv.py -a "amqps://messaging-enmasse.amq.io:443/$ADDRESS"
+

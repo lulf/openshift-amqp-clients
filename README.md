@@ -5,7 +5,7 @@ and producers.
 
 To build the image:
 
-    docker build .
+    docker build -t clients .
 
 To create a producer:
 

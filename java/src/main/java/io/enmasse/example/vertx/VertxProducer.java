@@ -38,9 +38,9 @@ public class VertxProducer extends AbstractVerticle {
                     .addCertPath(credentials.getX509Certificate().getAbsolutePath()))
                 .setSsl(true)
                 .setHostnameVerificationAlgorithm("");
-        } else if (credentials.getJksCertificate().exists()) {
+        } else if (credentials.getJks().exists()) {
             options.setKeyStoreOptions(new JksOptions()
-                    .setPath(credentials.getJksCertificate().getAbsolutePath()))
+                    .setPath(credentials.getJks().getAbsolutePath()))
                 .setSsl(true)
                 .setHostnameVerificationAlgorithm("");
         }

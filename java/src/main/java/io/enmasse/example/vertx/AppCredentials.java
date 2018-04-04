@@ -16,15 +16,15 @@ public class AppCredentials {
     private final String username;
     private final String password;
     private final File x509Certificate;
-    private final File jksCertificate;
+    private final File jks;
 
-    public AppCredentials(String hostname, int port, String username, String password, File x509Certificate, File jksCertificate) {
+    public AppCredentials(String hostname, int port, String username, String password, File x509Certificate, File jks) {
         this.hostname = hostname;
         this.port = port;
         this.username = username;
         this.password = password;
         this.x509Certificate = x509Certificate;
-        this.jksCertificate = jksCertificate;
+        this.jks = jks;
     }
 
     public String getHostname() {
@@ -47,8 +47,8 @@ public class AppCredentials {
         return x509Certificate;
     }
 
-    public File getJksCertificate() {
-        return jksCertificate;
+    public File getJks() {
+        return jks;
     }
 
     public static AppCredentials create() throws IOException {
@@ -67,8 +67,8 @@ public class AppCredentials {
         String username = readSecretFile("username");
         String password = readSecretFile("password");
         File x509Certificate = new File(SECRETS_PATH, "certificate.pem");
-        File jksCertificate = new File(SECRETS_PATH, "certificate.jks");
-        return new AppCredentials(hostname, port, username, password, x509Certificate, jksCertificate);
+        File jks = new File(SECRETS_PATH, "keystore.jks");
+        return new AppCredentials(hostname, port, username, password, x509Certificate, jks);
     }
 
     private static final String SECRETS_PATH = "/etc/app-credentials";
@@ -94,7 +94,7 @@ public class AppCredentials {
                 properties.getProperty("username"),
                 properties.getProperty("password"),
                 new File(properties.getProperty("certificate.pem")),
-                new File(properties.getProperty("certificate.jks")));
+                new File(properties.getProperty("keystore.jks")));
     }
 
     private static Properties loadProperties(String resource) throws IOException {

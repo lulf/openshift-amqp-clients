@@ -1,4 +1,4 @@
-# AMQP OpenShift demo clients
+# AMQP OpenShift python demo clients
 
 This repo contains the source for docker images and OpenShift templates for creating AMQP consumers
 and producers.

@@ -57,15 +57,19 @@ public class AppCredentials {
         return new AppCredentials(hostname, port, username, password);
     }
 
+    private static final String SECRETS_PATH = "/etc/app-credentials";
+
     private static final String readSecretFile(String filename) throws IOException {
-        File file = new File(SECRETS_PATH, filename);
+        File secretDir = new File(SECRETS_PATH);
+        File file = new File(secretDir, filename);
+        if (!file.exists()) {
+            throw new IllegalStateException("Unable to find secret " + file.getAbsolutePath());
+        }
         return new String(Files.readAllBytes(file.toPath()));
     }
 
-    private static final String SECRETS_PATH = "/etc/app-credentials";
-
     private static boolean isOnKube() {
-        return new File(SECRETS_PATH).exists();
+        return new File("/var/run/secrets/kubernetes.io/serviceaccount").exists();
     }
 
     public static AppCredentials fromProperties() throws IOException {

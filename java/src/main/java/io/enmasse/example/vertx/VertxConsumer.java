@@ -2,6 +2,9 @@ package io.enmasse.example.vertx;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.JksOptions;
+import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.proton.*;
 import org.apache.qpid.proton.amqp.messaging.AmqpValue;
 import org.slf4j.Logger;
@@ -20,7 +23,21 @@ public class VertxConsumer extends AbstractVerticle {
     @Override
     public void start(Future<Void> startPromise) {
         ProtonClient client = ProtonClient.create(vertx);
-        client.connect(credentials.getHostname(), credentials.getPort(), credentials.getUsername(), credentials.getPassword(), connection -> {
+
+        ProtonClientOptions options = new ProtonClientOptions();
+        if (credentials.getX509Certificate().exists()) {
+            options.setPemKeyCertOptions(new PemKeyCertOptions()
+                    .addCertPath(credentials.getX509Certificate().getAbsolutePath()))
+                    .setSsl(true)
+                    .setHostnameVerificationAlgorithm("");
+        } else if (credentials.getJksCertificate().exists()) {
+            options.setKeyStoreOptions(new JksOptions()
+                    .setPath(credentials.getJksCertificate().getAbsolutePath()))
+                    .setSsl(true)
+                    .setHostnameVerificationAlgorithm("");
+        }
+
+        client.connect(options, credentials.getHostname(), credentials.getPort(), credentials.getUsername(), credentials.getPassword(), connection -> {
             if (connection.succeeded()) {
                 log.info("Connected to {}:{}", credentials.getHostname(), credentials.getPort());
                 ProtonConnection connectionHandle = connection.result();

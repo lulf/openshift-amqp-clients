@@ -1,12 +1,17 @@
-package io.enmasse.example.vertx;
+package io.enmasse.example.common;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.Properties;
 
 public class AppCredentials {
@@ -15,16 +20,16 @@ public class AppCredentials {
     private final int port;
     private final String username;
     private final String password;
-    private final File x509Certificate;
-    private final File jks;
+    private final String x509Certificate;
+    private final KeyStore trustStore;
 
-    public AppCredentials(String hostname, int port, String username, String password, File x509Certificate, File jks) {
+    public AppCredentials(String hostname, int port, String username, String password, String x509Certificate, KeyStore trustStore) {
         this.hostname = hostname;
         this.port = port;
         this.username = username;
         this.password = password;
         this.x509Certificate = x509Certificate;
-        this.jks = jks;
+        this.trustStore = trustStore;
     }
 
     public String getHostname() {
@@ -43,15 +48,15 @@ public class AppCredentials {
         return password;
     }
 
-    public File getX509Certificate() {
+    public String getX509Certificate() {
         return x509Certificate;
     }
 
-    public File getJks() {
-        return jks;
+    public KeyStore getTrustStore() {
+        return trustStore;
     }
 
-    public static AppCredentials create() throws IOException {
+    public static AppCredentials create() throws Exception {
         if (isOnKube()) {
             log.info("Loading configuration from secret");
             return fromSystem();
@@ -61,14 +66,30 @@ public class AppCredentials {
         }
     }
 
-    public static AppCredentials fromSystem() throws IOException {
+    public static AppCredentials fromSystem() throws Exception {
         String hostname = readSecretFile("host");
         int port = Integer.parseInt(readSecretFile("port"));
         String username = readSecretFile("username");
         String password = readSecretFile("password");
-        File x509Certificate = new File(SECRETS_PATH, "certificate.pem");
-        File jks = new File(SECRETS_PATH, "keystore.jks");
-        return new AppCredentials(hostname, port, username, password, x509Certificate, jks);
+        File x509CertificateFile = new File(SECRETS_PATH, "certificate.pem");
+        
+        String x509Certificate = null;
+        KeyStore trustStore = null;
+        if (x509CertificateFile.exists()) {
+            x509Certificate = readSecretFile("certificate.pem");
+            trustStore = createTrustStore(x509Certificate);
+        }
+        
+        return new AppCredentials(hostname, port, username, password, x509Certificate, trustStore);
+    }
+    
+    private static KeyStore createTrustStore(String cert) throws Exception {
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(null);
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        trustStore.setCertificateEntry("messaging",
+                cf.generateCertificate(new ByteArrayInputStream(cert.getBytes("UTF-8"))));
+        return trustStore;
     }
 
     private static final String SECRETS_PATH = "/etc/app-credentials";
@@ -86,15 +107,20 @@ public class AppCredentials {
         return new File("/var/run/secrets/kubernetes.io/serviceaccount").exists();
     }
 
-    public static AppCredentials fromProperties() throws IOException {
+    public static AppCredentials fromProperties() throws Exception {
         Properties properties = loadProperties("config.properties");
+        String cert = properties.getProperty("certificate.pem");
+        KeyStore trustStore = null;
+        if (cert != null) {
+            trustStore = createTrustStore(cert);
+        }
         return new AppCredentials(
                 properties.getProperty("hostname"),
                 Integer.parseInt(properties.getProperty("port")),
                 properties.getProperty("username"),
                 properties.getProperty("password"),
-                new File(properties.getProperty("certificate.pem")),
-                new File(properties.getProperty("keystore.jks")));
+                cert,
+                trustStore);
     }
 
     private static Properties loadProperties(String resource) throws IOException {

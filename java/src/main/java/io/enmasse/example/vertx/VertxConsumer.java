@@ -1,5 +1,6 @@
 package io.enmasse.example.vertx;
 
+import io.enmasse.example.common.AppCredentials;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
@@ -26,14 +27,9 @@ public class VertxConsumer extends AbstractVerticle {
         ProtonClient client = ProtonClient.create(vertx);
 
         ProtonClientOptions options = new ProtonClientOptions();
-        if (credentials.getX509Certificate().exists()) {
+        if (credentials.getX509Certificate() != null) {
             options.setPemTrustOptions(new PemTrustOptions()
-                    .addCertPath(credentials.getX509Certificate().getAbsolutePath()))
-                    .setSsl(true)
-                    .setHostnameVerificationAlgorithm("");
-        } else if (credentials.getJks().exists()) {
-            options.setTrustStoreOptions(new JksOptions()
-                    .setPath(credentials.getJks().getAbsolutePath()))
+                    .addCertValue(Buffer.buffer(credentials.getX509Certificate())))
                     .setSsl(true)
                     .setHostnameVerificationAlgorithm("");
         }

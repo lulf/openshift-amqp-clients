@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.PemKeyCertOptions;
+import io.vertx.core.net.PemTrustOptions;
 import io.vertx.proton.ProtonClient;
 import io.vertx.proton.ProtonClientOptions;
 import io.vertx.proton.ProtonConnection;
@@ -34,15 +35,15 @@ public class VertxProducer extends AbstractVerticle {
 
         ProtonClientOptions options = new ProtonClientOptions();
         if (credentials.getX509Certificate().exists()) {
-            options.setPemKeyCertOptions(new PemKeyCertOptions()
+            options.setPemTrustOptions(new PemTrustOptions()
                     .addCertPath(credentials.getX509Certificate().getAbsolutePath()))
-                .setSsl(true)
-                .setHostnameVerificationAlgorithm("");
+                    .setSsl(true)
+                    .setHostnameVerificationAlgorithm("");
         } else if (credentials.getJks().exists()) {
-            options.setKeyStoreOptions(new JksOptions()
+            options.setTrustStoreOptions(new JksOptions()
                     .setPath(credentials.getJks().getAbsolutePath()))
-                .setSsl(true)
-                .setHostnameVerificationAlgorithm("");
+                    .setSsl(true)
+                    .setHostnameVerificationAlgorithm("");
         }
 
         client.connect(options, credentials.getHostname(), credentials.getPort(), credentials.getUsername(), credentials.getPassword(), connection -> {

@@ -62,7 +62,7 @@ public class VertxProducer extends AbstractVerticle {
                 });
                 sender.open();
             } else {
-                log.info("Error connecting to {}:{}", credentials.getHostname(), credentials.getPort());
+                log.info("Error connecting to {}:{}: {}", credentials.getHostname(), credentials.getPort(), connection.cause().getMessage());
                 startPromise.fail(connection.cause());
             }
         });

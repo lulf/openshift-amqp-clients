@@ -34,8 +34,9 @@ public class Main {
     private static Context fromCredentials(AppCredentials credentials, String queueName) throws NamingException {
         
         Hashtable<Object, Object> env = new Hashtable<>();
-        env.put("connectionfactory.factoryLookup", String.format("amqps://%s:%d?jms.username=%s&jms.password=%s", credentials.getHostname(), credentials.getPort(), credentials.getUsername(), credentials.getPassword()));
-        env.put("queue.queueLookup", queueName);
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
+        env.put("connectionfactory.factoryLookup", String.format("amqps://%s:%d?jms.username=%s&jms.password=%s&transport.verifyHost=false&transport.trustAll=true", credentials.getHostname(), credentials.getPort(), credentials.getUsername(), credentials.getPassword()));
+        env.put("queue.destinationLookup", queueName);
         return new InitialContext(env);
     }
 }

@@ -35,7 +35,7 @@ public class Main {
         
         Hashtable<Object, Object> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
-        env.put("connectionfactory.factoryLookup", String.format("amqps://%s:%d?jms.username=%s&jms.password=%s&transport.verifyHost=false&transport.trustAll=true", credentials.getHostname(), credentials.getPort(), credentials.getUsername(), credentials.getPassword()));
+        env.put("connectionfactory.factoryLookup", String.format("amqps://%s:%d?jms.username=%s&jms.password=%s&transport.verifyHost=false&transport.trustAll=true&amqp.saslMechanisms=PLAIN", credentials.getHostname(), credentials.getPort(), credentials.getUsername(), credentials.getPassword()));
         env.put("queue.destinationLookup", queueName);
         return new InitialContext(env);
     }

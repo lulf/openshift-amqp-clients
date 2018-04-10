@@ -8,7 +8,7 @@ messaging clients using that messaging infrastructure based on OpenShift Service
 In the OpenShift Service Catalog overview, select either of "EnMasse (standard)" or "EnMasse
 (brokered)".
 
-![Catalog](images/catalog1.png)
+![Catalog](images/catalog.png)
 
 Select among the available plans. If you have an OpenShift project on this cluster
 already, select it in the "Add to Project" field. If not, select the "Create Project" in the

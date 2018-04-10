@@ -10,12 +10,20 @@ In the OpenShift Service Catalog overview, select either of "EnMasse (standard)"
 
 ![Catalog](images/catalog.png)
 
-Select among the available plans. If you have an OpenShift project on this cluster
-already, select it in the "Add to Project" field. If not, select the "Create Project" in the
-drop-down box.
+Select among the available plans. If you have an OpenShift project on this cluster already, select it in the "Add to Project" field. If not, select the "Create Project" in the drop-down box.
 
 Use the same value for the "name" field. The address space will be provisioned and may take a few
 minutes. In the meantime, you can go to the next step of deploying the example application.
+
+![Provision](images/provision2.png)
+
+Skip binding at this point, we will perform the bind later.
+
+![Provision](images/provision3.png)
+
+If you go to your project, you should see the service provisioning in progress.
+
+![MyApp](images/myapp1.png)
 
 ## Deploying example application
 
@@ -43,28 +51,35 @@ the next step.
 
 ## Bind to app
 
-Go to your project where the app is deployed. You should see your messaging service to be
-provisioned and ready (if not, wait a little).
+Once messaging has been provisioned, it is time to create a binding.
 
-Create a binding. Select 'consoleAccess' and 'consoleAdmin' so that you can use the same credentials
+Select 'consoleAccess' and 'consoleAdmin' so that you can use the same credentials
 to create the addresses in the messaging console. Once the binding is created, you will see new
 secret created in your project.
 
+![Binding1](images/binding1.png)
+
 ### Create addresses
 
-Click on the secret and `reveal` to find the URL to the messaging console and credentials. Go to the
-messaging console and enter the credentials you've been given. Click on the "Addresses" menu item
-and create an address named `myqueue` of type `queue`.
+In project overview page, click on the secret and `reveal` to find the URL to the messaging console and credentials.
+
+![Secret1](images/secret1.png)
+
+Go to the messaging console and enter the credentials you've been given. Click on the "Addresses" menu item and create an address named `myqueue` of type `queue`.
+
+![Console1](images/console1.png)
 
 ### Add credentials to app
-Once the queue has been created, go back to the OpenShift console. Go to the secret that was created
-and click "Add to application". This will allow you modify your application deployment to mount the
-secret so that the example application can use it. Select the option to mount it and enter
-`/etc/app-credentials` as the mount point.
+
+Once the queue has been created, go back to the OpenShift console. Go to the secret that was created and click "Add to application". This will allow you modify your application deployment to mount the secret so that the example application can use it. Select the option to mount it and enter `/etc/app-credentials` as the mount point.
+
+![Secret2](images/secret2.png)
 
 Once the secret has been added to the deployment, a new version of your app will be deployed, and
 the clients should start to send and receive messages. You can confirm that it is working by looking
 at the logs for the example application pod.
+
+![App1](images/app1.png)
 
 ## Summary
 

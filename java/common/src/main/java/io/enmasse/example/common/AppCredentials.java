@@ -67,16 +67,16 @@ public class AppCredentials {
     }
 
     public static AppCredentials fromSystem() throws Exception {
-        String hostname = readSecretFile("host");
-        int port = Integer.parseInt(readSecretFile("port"));
+        String hostname = readSecretFile("messagingHost");
+        int port = Integer.parseInt(readSecretFile("messagingAmqpsPort"));
         String username = readSecretFile("username");
         String password = readSecretFile("password");
-        File x509CertificateFile = new File(SECRETS_PATH, "certificate.pem");
+        File x509CertificateFile = new File(SECRETS_PATH, "messagingCert.pem");
         
         String x509Certificate = null;
         KeyStore trustStore = null;
         if (x509CertificateFile.exists()) {
-            x509Certificate = readSecretFile("certificate.pem");
+            x509Certificate = readSecretFile("messagingCert.pem");
             trustStore = createTrustStore(x509Certificate);
         }
         

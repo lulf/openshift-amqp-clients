@@ -26,7 +26,11 @@ If you go to your project, you should see the service provisioning in progress.
 
 Once the service is provisioned, a link to the dashboard will be displayed on the provisioned service. 
 
-Click the dashboard link, which will redirect you to a keycloak login page. Click on 'OpenShift' which will allow you to login using OpenShift credentials. Once logged in, you should be able to access the messaging console.  Click on the "Addresses" menu item and create an address named `myqueue` of type `queue`. You can also create other addresses if you modify the client examples accordingly.
+Click the dashboard link, which will redirect you to a keycloak login page. Click on 'OpenShift' which will allow you to login using OpenShift credentials. 
+
+![Auth1](images/auth_service.png)
+
+Once logged in, you should be able to access the messaging console.  Click on the "Addresses" menu item and create an address named `myqueue` of type `queue`. You can also create other addresses if you modify the client examples accordingly.
 
 ![Console1](images/console1.png)
 
